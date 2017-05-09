@@ -71,6 +71,10 @@ function joke() {
     res.on('data', function(d) {
       console.log('got ' + d);
     });
+
+    res.on('end', function() {
+      postMessage(res.data);
+    })
   });
 
   jokeReq.on('error', function(err) {
