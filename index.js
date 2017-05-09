@@ -31,8 +31,8 @@ var botID = "bb9f5f058f16d79509891cf2b1";
 
 function respond() {
   var request = JSON.parse(this.req.chunks[0]),
-      jokeRegex = /[jJ]imothy[,| ]+tell me a joke/,
-      hiRegex = /[hH](ey|i) [jJ]imothy$/;
+      jokeRegex = /[jJ](imbot|immy)[,| ]+tell me a joke/,
+      hiRegex = /[hH](ey|i) [jJ](imbot|immy)[| ]$/;
 
   if(request.text && jokeRegex.test(request.text)) {
     this.res.writeHead(200);
