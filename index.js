@@ -74,7 +74,7 @@ function joke() {
     });
 
     res.on('end', function() {
-      var obj = JSON.parse(res.data);
+      var obj = JSON.parse(JSON.stringify(res.data));
       postMessage(obj.joke);
     })
   });
