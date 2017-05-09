@@ -70,11 +70,13 @@ function joke() {
     var str;
     res.on('data', function(d) {
       console.log('got ' + d);
-      str += d;
+      if (d !== undefined) {
+        str += d;
+      }
     });
 
     res.on('end', function() {
-      var obj = JSON.parse(JSON.stringify(res.data));
+      var obj = JSON.parse(str);
       postMessage(obj.joke);
     })
   });
