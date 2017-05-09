@@ -31,8 +31,9 @@ var botID = "bb9f5f058f16d79509891cf2b1";
 
 function respond() {
   var request = JSON.parse(this.req.chunks[0]),
-      jokeRegex = /[jJ](imbot|immy)[,| ]+tell me a joke/,
-      hiRegex = /[hH](ey|i) [jJ](imbot|immy)[| ]$/;
+      jokeRegex = /[jJ](imbo[t|]|immy|im)[,| ]+tell me a joke/,
+      hiRegex = /[hH](ey|i) [jJ](imbo[t|]|immy|im)[| ]$/,
+      faceRegex = /[jJ](imbo[t|]|immy|im)[,| ]+make a face/;
 
   if(request.text && jokeRegex.test(request.text)) {
     this.res.writeHead(200);
@@ -42,11 +43,40 @@ function respond() {
     this.res.writeHead(200);
     postMessage('Hi there');
     this.res.end();
+  } else if (request.text && faceRegex.test(request.text)) {
+    this.res.writeHead(200);
+    postMessage(cool());
+    this.res.end();
   } else {
     console.log("don't care");
     this.res.writeHead(200);
     this.res.end();
   }
+}
+
+function joke() {
+  var options = {
+    hostname: 'tambal.azurewebsites.net',
+    path: '/joke/random',
+    method: 'GET'
+  }
+
+  var jokeReq = https.request(options, function(res) {
+    if(res.statusCode == 200) {
+      //good
+      console.log('got ' + res);
+    } else {
+      console.log('bad status code ' + res.statusCode);
+    }
+  });
+
+  jokeReq.on('error', function(err) {
+    console.log('error getting joke ' + JSON.stringify(err));
+  });
+  jokeReq.on('timeout', function(err) {
+    console.log('timeout getting joke ' + JSON.stringify(err));
+  });
+  jokeReq.end();
 }
 
 function postMessage(botResponse) {
