@@ -27,7 +27,7 @@ server = http.createServer(function (req, res) {
 port = Number(process.env.PORT || 5000);
 server.listen(port);
 
-var botID = process.env.BOT_ID
+var botID = "bb9f5f058f16d79509891cf2b1";
 
 function respond() {
   var request = JSON.parse(this.req.chunks[0]),
