@@ -70,9 +70,7 @@ function joke() {
     var str;
     res.on('data', function(d) {
       console.log('got ' + d);
-      if (d !== undefined) {
         str += d;
-      }
     });
 
     res.on('end', function() {
