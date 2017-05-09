@@ -64,10 +64,13 @@ function joke() {
   var jokeReq = https.request(options, function(res) {
     if(res.statusCode == 200) {
       //good
-      console.log('got ' + res);
     } else {
       console.log('bad status code ' + res.statusCode);
     }
+
+    res.on('data', function(d) {
+      console.log('got ' + d);
+    });
   });
 
   jokeReq.on('error', function(err) {
