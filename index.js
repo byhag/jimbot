@@ -37,7 +37,7 @@ function respond() {
 
   if(request.text && jokeRegex.test(request.text)) {
     this.res.writeHead(200);
-    postMessage('I would if I knew any');
+    joke();
     this.res.end();
   } else if (request.text && hiRegex.test(request.text)) {
     this.res.writeHead(200);
