@@ -67,13 +67,14 @@ function joke() {
     } else {
       console.log('bad status code ' + res.statusCode);
     }
-
+    var str;
     res.on('data', function(d) {
       console.log('got ' + d);
+      str += d;
     });
 
     res.on('end', function() {
-      postMessage(res.data);
+      postMessage(str);
     })
   });
 
