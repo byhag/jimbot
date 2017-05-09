@@ -31,11 +31,16 @@ var botID = "bb9f5f058f16d79509891cf2b1";
 
 function respond() {
   var request = JSON.parse(this.req.chunks[0]),
-      botRegex = /test bot/;
+      jokeRegex = /[jJ]imothy[,| ]+tell me a joke/,
+      hiRegex = /[hH](ey|i) [jJ]imothy$/;
 
-  if(request.text && botRegex.test(request.text)) {
+  if(request.text && jokeRegex.test(request.text)) {
     this.res.writeHead(200);
-    postMessage();
+    postMessage('I would if I knew any');
+    this.res.end();
+  } else if (request.text && hiRegex.test(request.text)) {
+    this.res.writeHead(200);
+    postMessage('Hi there');
     this.res.end();
   } else {
     console.log("don't care");
@@ -44,10 +49,9 @@ function respond() {
   }
 }
 
-function postMessage() {
+function postMessage(botResponse) {
   var botResponse, options, body, botReq;
 
-  botResponse = cool();
 
   options = {
     hostname: 'api.groupme.com',
