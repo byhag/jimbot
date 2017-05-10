@@ -15,6 +15,7 @@ router = new director.http.Router({
 server = http.createServer(function (req, res) {
   req.chunks = [];
   req.on('data', function(chunk) {
+    console.log(chunk.toString());
     req.chunks.push(chunk.toString());
   });
 
@@ -30,11 +31,12 @@ server.listen(port);
 var botID = "bb9f5f058f16d79509891cf2b1";
 
 function respond() {
-  var request = JSON.parse(this.req.chunks[0]),
-      jokeRegex = /[jJ](imbo[t|]|immy|im)[,| ]+tell me a joke/,
-      hiRegex = /[hH](ey|i) [jJ](imbo[t|]|immy|im)[| ]$/,
-      faceRegex = /[jJ](imbo[t|]|immy|im)[,| ]+make a face/;
+  var request = JSON.parse(this.req.chunks[0]);
+  var jokeRegex = /[jJ](imbo(t|)|immy|im)(,| )+tell me a joke/,
+      hiRegex = /[hH](ey|i) [jJ](imbo(t|)|immy|im)(| )$/,
+      faceRegex = /[jJ](imbo(t|)|immy|im)(,| )+make a face/;
 
+  console.log(request);
   if(request.text && jokeRegex.test(request.text)) {
     this.res.writeHead(200);
     joke();
@@ -69,8 +71,9 @@ function joke() {
     }
     var str;
     res.on('data', function(d) {
-      console.log('got ' + d);
-        str += d;
+      console.log(typeof(d));
+      
+      str += d;
     });
 
     res.on('end', function() {
