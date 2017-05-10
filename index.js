@@ -8,7 +8,7 @@ var https = require('https');
 router = new director.http.Router({
   '/': {
     post: respond,
-    get: ping
+    get: ping 
   }
 });
 
@@ -63,23 +63,23 @@ function joke() {
     method: 'GET'
   }
 
+  var serv = this;
+
   var jokeReq = https.request(options, function(res) {
     if(res.statusCode == 200) {
       //good
     } else {
       console.log('bad status code ' + res.statusCode);
     }
-    var str;
+    var str = '';
     res.on('data', function(d) {
-      console.log(typeof(d));
-      
       str += d;
     });
 
     res.on('end', function() {
-      // var obj = JSON.parse(str);
-      postMessage(str);
-    })
+      var obj = JSON.parse(str);
+      postMessage(obj.joke);
+    });
   });
 
   jokeReq.on('error', function(err) {
@@ -93,7 +93,6 @@ function joke() {
 
 function postMessage(botResponse) {
   var botResponse, options, body, botReq;
-
 
   options = {
     hostname: 'api.groupme.com',
