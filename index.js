@@ -1,18 +1,18 @@
-var FeedParser = require('feedparser');
 var request = require('request');
 var cool = require('cool-ascii-faces');
 var director = require('director');
 var http = require('http');
 var https = require('https');
 var fs = require('fs');
+var schedule = require('node-schedule');
+var S = require('string');
+
+var botID = "bb9f5f058f16d79509891cf2b1";
 
 router = new director.http.Router({
   '/': {
     post: respond,
     get: ping 
-  },
-  '/~d/styles/rss2full.xsl': {
-    get: rss
   }
 });
 
@@ -29,20 +29,23 @@ server = http.createServer(function (req, res) {
   });
 });
 
-function rss() {
-
-}
 
 port = Number(process.env.PORT || 5000);
 server.listen(port);
 
-var botID = "bb9f5f058f16d79509891cf2b1";
+
+// schedule for 12:00 pm every day
+schedule.scheduleJob('0 12 * * *', function() {
+  quote();  
+});
 
 function respond() {
   var request = JSON.parse(this.req.chunks[0]);
   var jokeRegex = /[jJ](imbo(t|)|immy|im)(,| )+tell me a joke/,
-      hiRegex = /[hH](ey|i) [jJ](imbo(t|)|immy|im)(| )$/,
-      faceRegex = /[jJ](imbo(t|)|immy|im)(,| )+make a face/;
+      hiRegex = /([hH](ey|i|ello)|[yY]o) [jJ](imbo(t|)|immy|im)(| )$/,
+      faceRegex = /[jJ](imbo(t|)|immy|im)(,| )+make a face/,
+      jimbotRegex = /[jJ](imbo(t|)|immy|im)(| )$/,
+      defaultRegex = /[jJ](imbo(t|)|immy|im)/;
 
   console.log(request);
   if(request.text && jokeRegex.test(request.text)) {
@@ -56,6 +59,14 @@ function respond() {
   } else if (request.text && faceRegex.test(request.text)) {
     this.res.writeHead(200);
     postMessage(cool());
+    this.res.end();
+  } else if (request.text && jimbotRegex.test(request.text)) {
+    this.res.writeHead(200);
+    postMessage('Sup');
+    this.res.end();
+  } else if (request.text && defaultRegex.test(request.text)) {
+    this.res.writeHead(200);
+    postMessage('I am Jimbot');
     this.res.end();
   } else {
     console.log("don't care");
@@ -121,12 +132,14 @@ function joke() {
 
 function quote() {
   var options = {
-    hostname: 'feeds.feedburner.com',
-    path: '/brainyquote/QUOTEBR',
+    hostname: 'www.brainyquote.com',
+    path: '/link/quotebr.js',
     method: 'GET'
   }
-
+  
   var serv = this;
+
+  console.log('making quote request');
 
   var quoteReq = https.request(options, function(res) {
     if(res.statusCode == 200) {
@@ -140,18 +153,18 @@ function quote() {
     });
 
     res.on('end', function() {
-      // var obj = JSON.parse(str);
-      serv.res.writeHead(200);
-      serv.res.end(str);
-      // postMessage(obj.joke);
+      var arr = str.split("\n");
+      var quote = S(arr[2]).between('br.writeln("','<br>");').s;
+      var author = S(arr[3]).between('">','</a>').s;
+      postMessage('Quote of the day:\n' + quote + '\n - ' + author);
     });
   });
 
   quoteReq.on('error', function(err) {
-    console.log('error getting quote ' + JSON.stringify(err));
+    console.log('error getting joke ' + JSON.stringify(err));
   });
   quoteReq.on('timeout', function(err) {
-    console.log('timeout getting quote ' + JSON.stringify(err));
+    console.log('timeout getting joke ' + JSON.stringify(err));
   });
   quoteReq.end();
 }
