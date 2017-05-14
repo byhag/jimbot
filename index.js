@@ -45,6 +45,7 @@ function respond() {
       hiRegex = /([hH](ey|i|ello)|[yY]o) [jJ](imbo(t|)|immy|im)(| )$/,
       faceRegex = /[jJ](imbo(t|)|immy|im)(,| )+make a face/,
       jimbotRegex = /[jJ](imbo(t|)|immy|im)(| )$/,
+      quoteRegex = /[jJ](imbo(t|)|immy|im)(,| )+(what's the quote of the day(?|)|(|give me a |gimme a )quote)/,
       defaultRegex = /[jJ](imbo(t|)|immy|im)/;
 
   console.log(request);
@@ -63,6 +64,10 @@ function respond() {
   } else if (request.text && jimbotRegex.test(request.text)) {
     this.res.writeHead(200);
     postMessage('Sup');
+    this.res.end();
+  } else if (request.text && quoteRegex.test(request.text)) {
+    this.res.writeHead(200);
+    quote();
     this.res.end();
   } else if (request.text && defaultRegex.test(request.text)) {
     this.res.writeHead(200);
