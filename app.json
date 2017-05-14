@@ -1,8 +1,8 @@
 {
-  "name": "Start on Heroku: Node.js",
-  "description": "A barebones Node.js app using Express 4",
-  "repository": "https://github.com/heroku/node-js-getting-started",
-  "logo": "http://node-js-sample.herokuapp.com/node.svg",
-  "keywords": ["node", "express", "heroku"],
-  "image": "heroku/nodejs"
+  "name": "Jimbot",
+  "description": "a Groupme chatbot",
+  "repository": "https://github.com/byhag/jimbot",
+  "logo": "https://github.com/byhag/byhag.github.io/raw/master/images/bhlogo-rounded.svg",
+  "keywords": ["node", "groupme", "heroku"],
+  "image": "https://github.com/byhag/jimbot/raw/master/jimbot.png"
 }
