@@ -41,7 +41,7 @@ schedule.scheduleJob('0 12 * * *', function() {
 
 function respond() {
   var request = JSON.parse(this.req.chunks[0]);
-  var jokeRegex = /[jJ](imbo(t|)|immy|im)(,| )+tell me a joke/,
+  var jokeRegex = /[jJ](imbo(t|)|immy|im)(,| )+(|tell me a )joke/,
       hiRegex = /([hH](ey|i|ello)|[yY]o) [jJ](imbo(t|)|immy|im)(| )$/,
       faceRegex = /[jJ](imbo(t|)|immy|im)(,| )+make a face/,
       jimbotRegex = /[jJ](imbo(t|)|immy|im)(| )$/,
@@ -161,7 +161,7 @@ function quote() {
       var arr = str.split("\n");
       var quote = S(arr[2]).between('br.writeln("','<br>");').s;
       var author = S(arr[3]).between('">','</a>').s;
-      postMessage('Quote of the day:\n' + quote + '\n - ' + author);
+      postMessage(quote + '\n - ' + author);
     });
   });
 
