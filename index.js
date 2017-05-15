@@ -13,8 +13,15 @@ router = new director.http.Router({
   '/': {
     post: respond,
     get: ping 
+  },
+  '/facebook': {
+    get: challenge
   }
 });
+
+function challenge() {
+  console.log(req.toString());
+}
 
 server = http.createServer(function (req, res) {
   req.chunks = [];
