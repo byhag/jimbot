@@ -20,7 +20,7 @@ router = new director.http.Router({
 });
 
 function challenge() {
-  console.log(this.req.toString());
+  console.log(this.req);
   this.res.writeHead(200);
   this.res.end('success');
 }
