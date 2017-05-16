@@ -16,9 +16,16 @@ router = new director.http.Router({
     get: ping 
   },
   '/facebook': {
+    post: handleUser,
     get: challenge
   }
 });
+
+function handleUser() {
+  console.log(this.req.chunks);
+  this.res.writeHead(200);
+  this.res.end('success');
+}
 
 function challenge() {
   var q = url.parse(this.req.url,false).query;
