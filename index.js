@@ -22,9 +22,8 @@ router = new director.http.Router({
 
 function challenge() {
   var q = url.parse(this.req.url,true).query;
-  console.log(q);
   this.res.writeHead(200);
-  this.res.end(q.toString());
+  this.res.end(q.hub.challenge);
 }
 
 server = http.createServer(function (req, res) {
