@@ -21,9 +21,12 @@ router = new director.http.Router({
 });
 
 function challenge() {
-  var q = url.parse(this.req.url,true).query;
+  var q = url.parse(this.req.url,false).query;
   this.res.writeHead(200);
-  this.res.end(q.challenge);
+  var params = q.split('&');
+  var challenge = params[1].split('=')[1];
+  console.log(params);
+  this.res.end(challenge);
 }
 
 server = http.createServer(function (req, res) {
