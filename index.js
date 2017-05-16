@@ -21,7 +21,7 @@ router = new director.http.Router({
 });
 
 function challenge() {
-  var q = url.parse(req.url,true).query;
+  var q = url.parse(this.req.url,true).query;
   this.res.writeHead(200);
   this.res.end(q);
 }
