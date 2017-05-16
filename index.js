@@ -6,6 +6,7 @@ var https = require('https');
 var fs = require('fs');
 var schedule = require('node-schedule');
 var S = require('string');
+var url = require('url');
 
 var botID = "bb9f5f058f16d79509891cf2b1";
 
@@ -20,9 +21,9 @@ router = new director.http.Router({
 });
 
 function challenge() {
-  console.log(this.req.chunks);
+  var q = url.parse(req.url,true).query;
   this.res.writeHead(200);
-  this.res.end('success');
+  this.res.end(q);
 }
 
 server = http.createServer(function (req, res) {
