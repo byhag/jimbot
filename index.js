@@ -18,6 +18,9 @@ router = new director.http.Router({
   '/facebook': {
     post: handleUser,
     get: challenge
+  },
+  '/quote': {
+    get: quoteResponse
   }
 });
 
@@ -53,6 +56,11 @@ server = http.createServer(function (req, res) {
 port = Number(process.env.PORT || 5000);
 server.listen(port);
 
+function quoteResponse() {
+  this.res.writeHead(200);
+  quote();
+  this.res.end();
+}
 
 // schedule for 12:02 pm every day
 schedule.scheduleJob('2 12 * * *', function() {
