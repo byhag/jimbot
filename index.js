@@ -54,8 +54,8 @@ port = Number(process.env.PORT || 5000);
 server.listen(port);
 
 
-// schedule for 12:00 pm every day
-schedule.scheduleJob('0 12 * * *', function() {
+// schedule for 12:02 pm every day
+schedule.scheduleJob('2 12 * * *', function() {
   quote();  
 });
 
