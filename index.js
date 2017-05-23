@@ -74,7 +74,12 @@ function respond() {
       faceRegex = /[jJ](imbo(t|)|immy|im)(,| )+make a face/,
       jimbotRegex = /[jJ](imbo(t|)|immy|im)(| )$/,
       quoteRegex = /[jJ](imbo(t|)|immy|im)(,| )+(what's the quote of the day(\?|)|(|give me a |gimme a )quote)/,
+      thanksRegex = /[tT]hank(s| you)(|,) [jJ](imbo(t|)|immy|im)/,
+      song1Regex = /[iI]s this the real life(|\?)/,
+      song2Regex = /[cC]aught in a landslide/,
       defaultRegex = /[jJ](imbo(t|)|immy|im)/;
+
+  var name = request.name.split(' ');
 
   console.log(request);
   if(request.text && jokeRegex.test(request.text)) {
@@ -85,17 +90,29 @@ function respond() {
     this.res.writeHead(200);
     hello();
     this.res.end();
+  } else if (request.text && thanksRegex.test(request.text)) {
+    this.res.writeHead(200);
+    postMessage('No problemo, ' + name[0]);
+    this.res.end();
   } else if (request.text && faceRegex.test(request.text)) {
     this.res.writeHead(200);
     postMessage(cool());
     this.res.end();
-  } else if (request.text && jimbotRegex.test(request.text)) {
-    this.res.writeHead(200);
-    postMessage('Sup');
-    this.res.end();
   } else if (request.text && quoteRegex.test(request.text)) {
     this.res.writeHead(200);
     quote();
+    this.res.end();
+  } else if (request.text && song1Regex.test(request.text)) {
+    this.res.writeHead(200);
+    setTimeout(function() {
+      postMessage('Is this just fantasy?');
+    }, 3000);
+    this.res.end();
+  } else if (request.text && song2Regex.test(request.text)) {
+    this.res.writeHead(200);
+    setTimeout(function() {
+      postMessage('No escape from reality');
+    }, 3000);
     this.res.end();
   } else if (request.text && defaultRegex.test(request.text)) {
     this.res.writeHead(200);
@@ -203,6 +220,8 @@ function quote() {
 }
 
 function postMessage(botResponse) {
+  console.log('Response is ' + botResponse);
+  
   var botResponse, options, body, botReq;
 
   options = {
