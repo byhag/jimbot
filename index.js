@@ -139,13 +139,13 @@ function quoteResponse(req, res) {
 
 function respond(req, res) {
   var request = JSON.parse(req);
-  var jimbotRegex = /[jJ](imbo(t|)|immy|im)/;
-  var jokeRegex = /[jJ](imbo(t|)|immy|im)(,| )+(|tell me a )joke/,
-      hiRegex = /([hH](ey|i|ello)|[yY]o)/,
-      faceRegex = /(|make a )face/,
-      quoteRegex = /(what's the quote of the day(\?|)|(|give me a |gimme a )quote)/,
-      thanksRegex = /[tT]hank(s| you)/,
-      tellMeAboutRegex = /[tT]ell me about /
+  var jimbotRegex = /j(imbo(t|)|immy|im)/i;
+  var jokeRegex = /(|tell me a )joke/i,
+      hiRegex = /(h(ey|i|ello)|yo)/i,
+      faceRegex = /(|make a )face/i,
+      quoteRegex = /(what's the quote of the day(\?|)|(|give me a |gimme a )quote)/i,
+      thanksRegex = /thank(s| you)/i,
+      tellMeAboutRegex = /tell me about /i,
       song1Regex = /is this the real life(|\?)/i,
       song2Regex = /caught in a landslide/i,
       song3Regex = /open your eyes/i,
@@ -250,7 +250,7 @@ function respond(req, res) {
 function joke() {
   var options = {
     hostname: 'api.icndb.com',
-    path: '/jokes/random?firstName=' + name[0] + '&lastName=' + name[1],
+    path: '/jokes/random?firstName=' + name[0] + '&lastName=' + name[1] + '&exclude=[explicit]',
     method: 'GET'
   }
 
