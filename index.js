@@ -148,7 +148,10 @@ function respond(req, res) {
       tellMeAboutRegex = /[tT]ell me about /
       song1Regex = /is this the real life(|\?)/i,
       song2Regex = /caught in a landslide/i,
-      song3Regex = /open your eyes/i;
+      song3Regex = /open your eyes/i,
+      song4Regex = /i'm just a poor boy/i,
+      song5Regex = /because i'm easy come(,|) easy go/i,
+      song6Regex = /anyway the wind blows(,|) doesn't really matter to me/i;
 
   var name = request.name.split(' ');
 
@@ -191,18 +194,6 @@ function respond(req, res) {
       res.writeHead(200);
       quote();
       res.end();
-    } else if (song1Regex.test(request.text)) {
-      res.writeHead(200);
-      setTimeout(function() {
-        postMessage('Is this just fantasy?');
-      }, 3000);
-      res.end();
-    } else if (song2Regex.test(request.text)) {
-      res.writeHead(200);
-      setTimeout(function() {
-        postMessage('No escape from reality');
-      }, 3000);
-      res.end();
     // } else if (defaultRegex.test(request.text)) {
     //   res.writeHead(200);
     //   postMessage('I am Jimbot');
@@ -212,6 +203,42 @@ function respond(req, res) {
       postMessage('I am Jimbot');
       res.end();
     }
+  } else if (song1Regex.test(request.text)) {
+    res.writeHead(200);
+    setTimeout(function() {
+      postMessage('Is this just fantasy?');
+    }, 3000);
+    res.end();
+  } else if (song2Regex.test(request.text)) {
+    res.writeHead(200);
+    setTimeout(function() {
+      postMessage('No escape from reality');
+    }, 3000);
+    res.end();
+  } else if (song3Regex.test(request.text)) {
+    res.writeHead(200);
+    setTimeout(function() {
+      postMessage('Look up to the skies and see');
+    }, 3000);
+    res.end();
+  } else if (song4Regex.test(request.text)) {
+    res.writeHead(200);
+    setTimeout(function() {
+      postMessage('I need no sympathy');
+    }, 3000);
+    res.end();
+  } else if (song5Regex.test(request.text)) {
+    res.writeHead(200);
+    setTimeout(function() {
+      postMessage('Little high, little low');
+    }, 3000);
+    res.end();
+  } else if (song6Regex.test(request.text)) {
+    res.writeHead(200);
+    setTimeout(function() {
+      postMessage('Tooo meee');
+    }, 3000);
+    res.end();
   } else {
     console.log("don't care");
     res.writeHead(200);
