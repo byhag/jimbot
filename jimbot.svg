@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:1.41421;">
+    <g transform="matrix(0.998819,0,0,0.999422,-0.396054,-0.36153)">
+        <rect x="0.397" y="0.362" width="1025.21" height="1024.59" style="fill:rgb(85,129,186);"/>
+    </g>
+    <g transform="matrix(1.32773,0,0,1.6057,-149.377,-524.499)">
+        <ellipse cx="489.087" cy="690.976" rx="188.291" ry="155.696" style="fill:rgb(50,50,50);"/>
+        <clipPath id="_clip1">
+            <ellipse cx="489.087" cy="690.976" rx="188.291" ry="155.696"/>
+        </clipPath>
+        <g clip-path="url(#_clip1)">
+            <g transform="matrix(0.53333,0,0,0.648235,223.941,157.271)">
+                <rect x="144.104" y="553.725" width="706.094" height="259.026" style="fill:rgb(85,129,186);"/>
+            </g>
+        </g>
+    </g>
+    <g transform="matrix(0.809016,0,0,0.800011,76.5326,118.832)">
+        <ellipse cx="300.943" cy="288.957" rx="123.607" ry="124.998" style="fill:rgb(50,50,50);"/>
+    </g>
+    <g transform="matrix(0.809016,0,0,0.800011,426.533,118.832)">
+        <ellipse cx="300.943" cy="288.957" rx="123.607" ry="124.998" style="fill:rgb(50,50,50);"/>
+    </g>
+    <g transform="matrix(0.731776,0,0,0.719038,158.716,191.043)">
+        <ellipse cx="268.23" cy="144.577" rx="34.163" ry="34.769" style="fill:rgb(230,230,230);"/>
+    </g>
+    <g transform="matrix(0.731776,0,0,0.719038,518.716,191.043)">
+        <ellipse cx="268.23" cy="144.577" rx="34.163" ry="34.769" style="fill:rgb(230,230,230);"/>
+    </g>
+</svg>

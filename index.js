@@ -1,28 +1,61 @@
+require('dotenv').config();
 var request = require('request');
 var cool = require('cool-ascii-faces');
-var director = require('director');
+var express = require('express');
 var http = require('http');
 var https = require('https');
 var fs = require('fs');
-var schedule = require('node-schedule');
 var S = require('string');
 var url = require('url');
 
-var botID = "bb9f5f058f16d79509891cf2b1";
+var app = express();
 
-router = new director.http.Router({
-  '/': {
-    post: respond,
-    get: ping 
-  },
-  '/facebook': {
-    post: handleUser,
-    get: challenge
-  },
-  '/quote': {
-    get: quoteResponse
-  }
+var botID = process.env.BOT_ID;
+
+var wolframID = process.env.WOLFRAM_ID;
+
+app.get('/', function(req, res) {
+  console.log('serving index');
+  res.sendFile('index.html',{root: __dirname});
 });
+
+app.post('/', function(req, res) {
+  req.chunks = [];
+  req.on('data', function(chunk) {
+    console.log(chunk.toString());
+    req.chunks.push(chunk.toString());
+    respond(chunk.toString(), res);
+  });
+});
+
+app.get('/quote', function(req, res) {
+  quoteResponse(req, res);
+});
+
+// server = http.createServer(function (req, res) {
+//   req.chunks = [];
+//   req.on('data', function(chunk) {
+//     console.log(chunk.toString());
+//     req.chunks.push(chunk.toString());
+//   });
+// });
+
+port = Number(process.env.PORT || 5000);
+app.listen(port);
+
+// router = new director.http.Router({
+//   '/groupme': {
+//     post: respond,
+//     get: ping 
+//   },
+//   '/facebook': {
+//     post: handleUser,
+//     get: challenge
+//   },
+//   '/quote': {
+//     get: quoteResponse
+//   }
+// });
 
 function handleUser() {
   console.log(this.req.chunks);
@@ -39,90 +72,186 @@ function challenge() {
   this.res.end(challenge);
 }
 
-server = http.createServer(function (req, res) {
-  req.chunks = [];
-  req.on('data', function(chunk) {
-    console.log(chunk.toString());
-    req.chunks.push(chunk.toString());
-  });
 
-  router.dispatch(req, res, function(err) {
-    res.writeHead(err.status, {"Content-Type": "text/plain"});
-    res.end(err.message);
-  });
-});
+var galileoCount = 0;
+
+// var rhapsody = "Is this the real life?\n" + 
+// "Is this just fantasy?\n" + 
+// "Caught in a landslide\n" +
+// "No escape from reality\n" + 
+// "Open your eyes\n" + 
+// "Look up to the skies and see\n" + 
+// "I'm just a poor boy\n" + 
+// "I need no sympathy\n" +
+// "Because I'm easy come, easy go\n" + 
+// "Little high, little low\n" +
+// "Any way the wind blows doesn't really matter to me\n" + 
+// "ToOO meeee\n" +
+// "Mama, just killed a man\n" + 
+// "Put a gun against his head\n" +
+// "Pulled my trigger, now he's dead\n" +
+// "Mama, life had just begun\n" +
+// "But now I've gone and thrown it all away\n" +
+// "Mama, ooh, didn't mean to make you cry\n" +
+// "If I'm not back again this time tomorrow\n" +
+// "Carry on, carry on\n" + 
+// "As if nothing really matters\n" +
+// "Too late, my time has come\n" +
+// "Sends shivers down my spine\n" +
+// "Body's aching all the time\n" +
+// "Goodbye, everybody, I've got to go\n" +
+// "Gotta leave you all behind and face the truth\n" +
+// "Mama, ooh, I don't want to die\n" +
+// I sometimes wish I'd never been born at all
+// var bridge = [];
+// bridge[0] = "I see a little silhouetto of a man";
+// Scaramouche, Scaramouche, will you do the Fandango
+// Thunderbolt and lightning, very, very fright'ning me
+// (Galileo) Galileo, (Galileo) Galileo, Galileo figaro magnifico
+// (I'm just a poor boy, nobody loves me)
+// He's just a poor boy from a poor family
+// Spare him his life from this monstrosity
+// Easy come, easy go, will you let me go?
+// Bismillah! No, we will not let you go
+// (Let him go) Bismillah! We will not let you go
+// (Let him go) Bismillah! We will not let you go
+// (Let me go) Will not let you go
+// (Let me go) Will not let you go
+// (Let me go) Ah, no, no, no, no, no, no, no
+// (Oh mamma mia, mamma mia) Mama mia, let me go
+// Beelzebub has a devil put aside for me, for me, for me
+// So you think you can stone me and spit in my eye?
+// So you think you can love me and leave me to die?
+// Oh, baby, can't do this to me, baby!
+// Just gotta get out, just gotta get right outta here!
+// Nothing really matters, anyone can see
+// Nothing really matters
+// Nothing really matters to me
+// Any way the wind blows"
 
 
-port = Number(process.env.PORT || 5000);
-server.listen(port);
 
-function quoteResponse() {
-  this.res.writeHead(200);
+function quoteResponse(req, res) {
+  res.writeHead(200);
   quote();
-  this.res.end();
+  res.end();
 }
 
-// schedule for 12:02 pm every day
-schedule.scheduleJob('2 12 * * *', function() {
-  quote();  
-});
-
-function respond() {
-  var request = JSON.parse(this.req.chunks[0]);
+function respond(req, res) {
+  var request = JSON.parse(req);
+  var jimbotRegex = /[jJ](imbo(t|)|immy|im)/;
   var jokeRegex = /[jJ](imbo(t|)|immy|im)(,| )+(|tell me a )joke/,
-      hiRegex = /([hH](ey|i|ello)|[yY]o) [jJ](imbo(t|)|immy|im)(| )$/,
-      faceRegex = /[jJ](imbo(t|)|immy|im)(,| )+make a face/,
-      jimbotRegex = /[jJ](imbo(t|)|immy|im)(| )$/,
-      quoteRegex = /[jJ](imbo(t|)|immy|im)(,| )+(what's the quote of the day(\?|)|(|give me a |gimme a )quote)/,
-      thanksRegex = /[tT]hank(s| you)(|,) [jJ](imbo(t|)|immy|im)/,
-      song1Regex = /[iI]s this the real life(|\?)/,
-      song2Regex = /[cC]aught in a landslide/,
-      defaultRegex = /[jJ](imbo(t|)|immy|im)/;
+      hiRegex = /([hH](ey|i|ello)|[yY]o)/,
+      faceRegex = /(|make a )face/,
+      quoteRegex = /(what's the quote of the day(\?|)|(|give me a |gimme a )quote)/,
+      thanksRegex = /[tT]hank(s| you)/,
+      tellMeAboutRegex = /[tT]ell me about /
+      song1Regex = /is this the real life(|\?)/i,
+      song2Regex = /caught in a landslide/i,
+      song3Regex = /open your eyes/i;
 
   var name = request.name.split(' ');
 
+  // so he doesn't respond to himself
+  if (name[0] === 'Jimbot') {
+    console.log('Ignoring myself');
+    res.writeHead(200);
+    res.end(); 
+    return;
+  }
+  console.log("botID: " + botID);
+  console.log("wolframID: " + wolframID);
   console.log(request);
-  if(request.text && jokeRegex.test(request.text)) {
-    this.res.writeHead(200);
-    joke();
-    this.res.end();
-  } else if (request.text && hiRegex.test(request.text)) {
-    this.res.writeHead(200);
-    hello();
-    this.res.end();
-  } else if (request.text && thanksRegex.test(request.text)) {
-    this.res.writeHead(200);
-    postMessage('No problemo, ' + name[0]);
-    this.res.end();
-  } else if (request.text && faceRegex.test(request.text)) {
-    this.res.writeHead(200);
-    postMessage(cool());
-    this.res.end();
-  } else if (request.text && quoteRegex.test(request.text)) {
-    this.res.writeHead(200);
-    quote();
-    this.res.end();
-  } else if (request.text && song1Regex.test(request.text)) {
-    this.res.writeHead(200);
-    setTimeout(function() {
-      postMessage('Is this just fantasy?');
-    }, 3000);
-    this.res.end();
-  } else if (request.text && song2Regex.test(request.text)) {
-    this.res.writeHead(200);
-    setTimeout(function() {
-      postMessage('No escape from reality');
-    }, 3000);
-    this.res.end();
-  } else if (request.text && defaultRegex.test(request.text)) {
-    this.res.writeHead(200);
-    postMessage('I am Jimbot');
-    this.res.end();
+  if (request.text && jimbotRegex.test(request.text)) {
+    if(jokeRegex.test(request.text)) {
+      res.writeHead(200);
+      joke();
+      res.end();
+    } else if (tellMeAboutRegex.test(request.text)) {
+      res.writeHead(200);
+      var person = S(request.text).strip('Tell me about ','tell me about ',', ',
+      'Jimbot ','jimbot ','Jimbo ','jimbo ','Jimmy ','jimmy ','Jim ','jim ',
+      ' Jimbot',' jimbot',' Jimbo',' jimbo',' Jimmy',' jimmy',' Jim',' jim').split(' ');
+      console.log(person);  
+      tellMeAbout(person);
+      res.end();
+    } else if (hiRegex.test(request.text)) {
+      res.writeHead(200);
+      hello();
+      res.end();
+    } else if (thanksRegex.test(request.text)) {
+      res.writeHead(200);
+      postMessage('No problemo, ' + name[0]);
+      res.end();
+    } else if (faceRegex.test(request.text)) {
+      res.writeHead(200);
+      postMessage(cool());
+      res.end();
+    } else if (quoteRegex.test(request.text)) {
+      res.writeHead(200);
+      quote();
+      res.end();
+    } else if (song1Regex.test(request.text)) {
+      res.writeHead(200);
+      setTimeout(function() {
+        postMessage('Is this just fantasy?');
+      }, 3000);
+      res.end();
+    } else if (song2Regex.test(request.text)) {
+      res.writeHead(200);
+      setTimeout(function() {
+        postMessage('No escape from reality');
+      }, 3000);
+      res.end();
+    // } else if (defaultRegex.test(request.text)) {
+    //   res.writeHead(200);
+    //   postMessage('I am Jimbot');
+    //   res.end();
+    } else {
+      res.writeHead(200);
+      postMessage('I am Jimbot');
+      res.end();
+    }
   } else {
     console.log("don't care");
-    this.res.writeHead(200);
-    this.res.end();
+    res.writeHead(200);
+    res.end();
   }
+
+}
+
+function joke() {
+  var options = {
+    hostname: 'api.icndb.com',
+    path: '/jokes/random?firstName=' + name[0] + '&lastName=' + name[1],
+    method: 'GET'
+  }
+
+
+  var jokeReq = http.request(options, function(res) {
+    if(res.statusCode == 200) {
+      //good
+    } else {
+      console.log('bad status code ' + res.statusCode);
+    }
+    var str = '';
+    res.on('data', function(d) {
+      str += d;
+    });
+
+    res.on('end', function() {
+      var obj = JSON.parse(str);
+      postMessage(obj.value.joke);
+    });
+  });
+
+  jokeReq.on('error', function(err) {
+    console.log('error getting joke ' + JSON.stringify(err));
+  });
+  jokeReq.on('timeout', function(err) {
+    console.log('timeout getting joke ' + JSON.stringify(err));
+  });
+  jokeReq.end();
 }
 
 function hello() {
@@ -145,16 +274,15 @@ function hello() {
   postMessage(response);
 }
 
-function joke() {
+function tellMeAbout(name) {
   var options = {
-    hostname: 'tambal.azurewebsites.net',
-    path: '/joke/random',
+    hostname: 'api.icndb.com',
+    path: '/jokes/random?firstName=' + name[0] + '&lastName=' + name[1] + '&exclude=[explicit]',
     method: 'GET'
   }
 
-  var serv = this;
 
-  var jokeReq = https.request(options, function(res) {
+  var tellMeAboutReq = http.request(options, function(res) {
     if(res.statusCode == 200) {
       //good
     } else {
@@ -167,17 +295,17 @@ function joke() {
 
     res.on('end', function() {
       var obj = JSON.parse(str);
-      postMessage(obj.joke);
+      postMessage(obj.value.joke);
     });
   });
 
-  jokeReq.on('error', function(err) {
+  tellMeAboutReq.on('error', function(err) {
     console.log('error getting joke ' + JSON.stringify(err));
   });
-  jokeReq.on('timeout', function(err) {
+  tellMeAboutReq.on('timeout', function(err) {
     console.log('timeout getting joke ' + JSON.stringify(err));
   });
-  jokeReq.end();
+  tellMeAboutReq.end();
 }
 
 function quote() {
@@ -187,8 +315,6 @@ function quote() {
     method: 'GET'
   }
   
-  var serv = this;
-
   console.log('making quote request');
 
   var quoteReq = https.request(options, function(res) {
@@ -221,7 +347,6 @@ function quote() {
 
 function postMessage(botResponse) {
   console.log('Response is ' + botResponse);
-  
   var botResponse, options, body, botReq;
 
   options = {
@@ -255,8 +380,7 @@ function postMessage(botResponse) {
 }
 
 function ping() {
-  var random = Math.floor(Math.random() * 3);
   this.res.writeHead(200);
-  this.res.end("random number: " + random);
+  this.res.end('I am Jimbot');
 }
 
