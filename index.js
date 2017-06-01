@@ -151,7 +151,8 @@ function respond(req, res) {
       song3Regex = /open your eyes/i,
       song4Regex = /i'm just a poor boy/i,
       song5Regex = /because i'm easy come(,|) easy go/i,
-      song6Regex = /anyway the wind blows(,|) doesn't really matter to me/i;
+      song6Regex = /anyway the wind blows(,|) doesn't really matter to me/i,
+      catPicRegex = /(show me|gimme) a cat(| (pic(|ture)|image))/i;
 
   var name = request.name.split(' ');
 
@@ -193,6 +194,10 @@ function respond(req, res) {
     } else if (quoteRegex.test(request.text)) {
       res.writeHead(200);
       quote();
+      res.end();
+    } else if (catPicRegex.test(request.text)) {
+      res.writeHead(200);
+      catPic();
       res.end();
     // } else if (defaultRegex.test(request.text)) {
     //   res.writeHead(200);
@@ -249,13 +254,13 @@ function respond(req, res) {
 
 function joke() {
   var options = {
-    hostname: 'api.icndb.com',
-    path: '/jokes/random?firstName=' + name[0] + '&lastName=' + name[1] + '&exclude=[explicit]',
+    hostname: 'www.reddit.com',
+    path: '/r/cleanjokes.json',
     method: 'GET'
   }
 
 
-  var jokeReq = http.request(options, function(res) {
+  var jokeReq = https.request(options, function(res) {
     if(res.statusCode == 200) {
       //good
     } else {
@@ -268,7 +273,8 @@ function joke() {
 
     res.on('end', function() {
       var obj = JSON.parse(str);
-      postMessage(obj.value.joke);
+      var choice = Math.floor(Math.random() * obj.data.children.length);
+      postMessage(obj.data.children[choice].data.title + '\n' + obj.data.children[choice].data.selftext);
     });
   });
 
@@ -299,6 +305,39 @@ function hello() {
       break;
   }
   postMessage(response);
+}
+
+function catPic() {
+  var options = {
+    hostname: 'thecatapi.com',
+    path: '/api/images/get',
+    method: 'GET'
+  }
+
+  var catPicReq = http.request(options, function(res) {
+    if(res.statusCode == 200) {
+      //good
+    } else {
+      console.log('bad status code ' + res.statusCode);
+    }
+    var str = '';
+    res.on('data', function(d) {
+      str += d;
+    });
+
+    res.on('end', function() {
+      console.log(str);
+      // postImage(obj.value.joke);
+    });
+  });
+
+  catPicReq.on('error', function(err) {
+    console.log('error getting cat ' + JSON.stringify(err));
+  });
+  catPicReq.on('timeout', function(err) {
+    console.log('timeout getting cat ' + JSON.stringify(err));
+  });
+  catPicReq.end();
 }
 
 function tellMeAbout(name) {
