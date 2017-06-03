@@ -4,6 +4,7 @@ var cool = require('cool-ascii-faces');
 var express = require('express');
 var http = require('http');
 var https = require('https');
+var stream = require('stream').Transform;
 var fs = require('fs');
 var S = require('string');
 var url = require('url');
@@ -14,12 +15,12 @@ var botID = process.env.BOT_ID;
 
 var wolframID = process.env.WOLFRAM_ID;
 
-app.get('/', function(req, res) {
+app.get('/', (req, res) => {
   console.log('serving index');
   res.sendFile('index.html',{root: __dirname});
 });
 
-app.post('/', function(req, res) {
+app.post('/', (req, res) => {
   req.chunks = [];
   req.on('data', function(chunk) {
     console.log(chunk.toString());
@@ -28,7 +29,7 @@ app.post('/', function(req, res) {
   });
 });
 
-app.get('/quote', function(req, res) {
+app.get('/quote', (req, res) => {
   quoteResponse(req, res);
 });
 
@@ -133,7 +134,7 @@ var galileoCount = 0;
 
 function quoteResponse(req, res) {
   res.writeHead(200);
-  quote();
+  qotd();
   res.end();
 }
 
@@ -142,8 +143,12 @@ function respond(req, res) {
   var jimbotRegex = /j(imbo(t|)|immy|im)/i;
   var jokeRegex = /(|tell me a )joke/i,
       hiRegex = /(h(ey|i|ello)|yo)/i,
+      colorRegex = /favorite color/i,
+      whyRegex = /why/i,
       faceRegex = /(|make a )face/i,
-      quoteRegex = /(what's the quote of the day(\?|)|(|give me a |gimme a )quote)/i,
+      quoteRegex = /(|give me a |gimme a )quote/i,
+      qotdRegex = /((what's the |)quote of the day(\?|)|qotd)/i,
+      adviceRegex = /((got|have) any |)advice/i,
       thanksRegex = /thank(s| you)/i,
       tellMeAboutRegex = /tell me about /i,
       song1Regex = /is this the real life(|\?)/i,
@@ -152,7 +157,9 @@ function respond(req, res) {
       song4Regex = /i'm just a poor boy/i,
       song5Regex = /because i'm easy come(,|) easy go/i,
       song6Regex = /anyway the wind blows(,|) doesn't really matter to me/i,
-      catPicRegex = /(show me|gimme) a cat(| (pic(|ture)|image))/i;
+      catPicRegex = /(show me|gimme) a cat(| (pic(|ture)|image))/i,
+      wolframRegex = /wolfram(|aplha)/i,
+      verseRegex = /(gimme a |)(bible |)verse/i;
 
   var name = request.name.split(' ');
 
@@ -176,12 +183,19 @@ function respond(req, res) {
       var person = S(request.text).strip('Tell me about ','tell me about ',', ',
       'Jimbot ','jimbot ','Jimbo ','jimbo ','Jimmy ','jimmy ','Jim ','jim ',
       ' Jimbot',' jimbot',' Jimbo',' jimbo',' Jimmy',' jimmy',' Jim',' jim').split(' ');
-      console.log(person);  
       tellMeAbout(person);
       res.end();
     } else if (hiRegex.test(request.text)) {
       res.writeHead(200);
       hello();
+      res.end();
+    } else if (colorRegex.test(request.text)) {
+      res.writeHead(200);
+      postMessage('I like blue');
+      res.end();
+    } else if (whyRegex.test(request.text)) {
+      res.writeHead(200);
+      postMessage('Because reasons');
       res.end();
     } else if (thanksRegex.test(request.text)) {
       res.writeHead(200);
@@ -195,14 +209,30 @@ function respond(req, res) {
       res.writeHead(200);
       quote();
       res.end();
+    } else if (qotdRegex.test(request.text)) {
+      res.writeHead(200);
+      qotd();
+      res.end();
+    } else if (verseRegex.test(request.text)) {
+      res.writeHead(200);
+      verse();
+      res.end();
+    } else if (adviceRegex.test(request.text)) {
+      res.writeHead(200);
+      advice();
+      res.end();
     } else if (catPicRegex.test(request.text)) {
       res.writeHead(200);
       catPic();
       res.end();
-    // } else if (defaultRegex.test(request.text)) {
-    //   res.writeHead(200);
-    //   postMessage('I am Jimbot');
-    //   res.end();
+    } else if (wolframRegex.test(request.text)) {
+      res.writeHead(200);
+      var query = S(request.text).strip('wolfram', 'Wolfram', 'wolframaplha', 'Wolframaplha',
+      'Jimbot ','jimbot ','Jimbo ','jimbo ','Jimmy ','jimmy ','Jim ','jim ',
+      ' Jimbot',' jimbot',' Jimbo',' jimbo',' Jimmy',' jimmy',' Jim',' jim').s;
+      console.log(query);
+      wolfram(query);
+      res.end();
     } else {
       res.writeHead(200);
       postMessage('I am Jimbot');
@@ -252,39 +282,63 @@ function respond(req, res) {
 
 }
 
-function joke() {
+function wolfram(query) {
   var options = {
+    hostname: 'www.wolframaplha.com',
+    path: encodeURI('/queryrecognizer/query.jsp?appid=' + wolframID + '&mode=default&i=' + query),
+    method: 'GET'
+  }
+
+  makeHttpRequest(options, (data) => {
+    console.log(data);
+  });
+}
+
+function verse() {
+  var options = {
+    hostname: 'quotes.rest',
+    path: '/bible/verse.json',
+    method: 'GET'
+  }
+
+  makeHttpRequest(options, (data) => {
+    var obj = JSON.parse(data);
+    postMessage(obj.contents.verse + '\n - ' + obj.contents.book + ' ' + obj.contents.chapter + ':' + obj.contents.number);
+  });
+}
+
+function joke() {
+  var redditOptions = {
     hostname: 'www.reddit.com',
     path: '/r/cleanjokes.json',
     method: 'GET'
   }
 
-
-  var jokeReq = https.request(options, function(res) {
-    if(res.statusCode == 200) {
-      //good
-    } else {
-      console.log('bad status code ' + res.statusCode);
+  var dadJokeOptions = {
+    hostname: 'icanhazdadjoke.com',
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json'
     }
-    var str = '';
-    res.on('data', function(d) {
-      str += d;
-    });
+  }
 
-    res.on('end', function() {
-      var obj = JSON.parse(str);
-      var choice = Math.floor(Math.random() * obj.data.children.length);
-      postMessage(obj.data.children[choice].data.title + '\n' + obj.data.children[choice].data.selftext);
-    });
-  });
-
-  jokeReq.on('error', function(err) {
-    console.log('error getting joke ' + JSON.stringify(err));
-  });
-  jokeReq.on('timeout', function(err) {
-    console.log('timeout getting joke ' + JSON.stringify(err));
-  });
-  jokeReq.end();
+  var option = Math.floor(Math.random() * 2);
+  console.log(option);
+  switch (option) {
+    case 0:
+      makeHttpsRequest(redditOptions, (data) => {
+        var obj = JSON.parse(data);
+        var choice = Math.floor(Math.random() * obj.data.children.length);
+        postMessage(obj.data.children[choice].data.title + '\n' + obj.data.children[choice].data.selftext);
+      });
+      break;
+    case 1:
+      makeHttpsRequest(dadJokeOptions, (data) => {
+        var obj = JSON.parse(data);
+        postMessage(obj.joke);
+      });
+      break;
+  }
 }
 
 function hello() {
@@ -307,6 +361,19 @@ function hello() {
   postMessage(response);
 }
 
+function advice() {
+  var options = {
+    hostname: 'api.adviceslip.com',
+    path: '/advice',
+    method: 'GET'
+  }
+
+  makeHttpRequest(options, (data) => {
+    var obj = JSON.parse(data);
+    postMessage(obj.slip.advice);
+  })
+}
+
 function catPic() {
   var options = {
     hostname: 'thecatapi.com',
@@ -314,30 +381,9 @@ function catPic() {
     method: 'GET'
   }
 
-  var catPicReq = http.request(options, function(res) {
-    if(res.statusCode == 200) {
-      //good
-    } else {
-      console.log('bad status code ' + res.statusCode);
-    }
-    var str = '';
-    res.on('data', function(d) {
-      str += d;
-    });
-
-    res.on('end', function() {
-      console.log(str);
-      // postImage(obj.value.joke);
-    });
+  makeHttpRequest(options, (data) => {
+    console.log(data);
   });
-
-  catPicReq.on('error', function(err) {
-    console.log('error getting cat ' + JSON.stringify(err));
-  });
-  catPicReq.on('timeout', function(err) {
-    console.log('timeout getting cat ' + JSON.stringify(err));
-  });
-  catPicReq.end();
 }
 
 function tellMeAbout(name) {
@@ -347,34 +393,29 @@ function tellMeAbout(name) {
     method: 'GET'
   }
 
-
-  var tellMeAboutReq = http.request(options, function(res) {
-    if(res.statusCode == 200) {
-      //good
-    } else {
-      console.log('bad status code ' + res.statusCode);
-    }
-    var str = '';
-    res.on('data', function(d) {
-      str += d;
-    });
-
-    res.on('end', function() {
-      var obj = JSON.parse(str);
-      postMessage(obj.value.joke);
-    });
+  makeHttpRequest(options, (data) => {
+    var obj = JSON.parse(str);
+    postMessage(obj.value.joke);
   });
-
-  tellMeAboutReq.on('error', function(err) {
-    console.log('error getting joke ' + JSON.stringify(err));
-  });
-  tellMeAboutReq.on('timeout', function(err) {
-    console.log('timeout getting joke ' + JSON.stringify(err));
-  });
-  tellMeAboutReq.end();
 }
 
 function quote() {
+  var options = {
+    hostname: 'andruxnet-random-famous-quotes.p.mashape.com',
+    method: 'GET',
+    headers: {
+      'X-Mashape-Key': 'R9ENSG3jVSmshnmZDiNWmlFoKBrVp1d3OVYjsneJpiOgNkTLiz',
+      'Accept': 'application/json'
+    }
+  }
+
+  makeHttpsRequest(options, (data) => {
+    var obj = JSON.parse(data);
+    postMessage(obj.quote + '\n - ' + obj.author);
+  })
+}
+
+function qotd() {
   var options = {
     hostname: 'www.brainyquote.com',
     path: '/link/quotebr.js',
@@ -383,32 +424,66 @@ function quote() {
   
   console.log('making quote request');
 
-  var quoteReq = https.request(options, function(res) {
-    if(res.statusCode == 200) {
-      //good
+  makeHttpsRequest(options, (data) => {
+    var arr = data.split("\n");
+    var quote = S(arr[2]).between('br.writeln("','<br>");').s;
+    var author = S(arr[3]).between('">','</a>').s;
+    postMessage(quote + '\n - ' + author);
+  }); 
+}
+
+function makeHttpRequest(options, callback) {
+  var req = http.request(options, (res) => {
+    if (res.statusCode == 200) {
+      // all good
     } else {
-      console.log('bad status code ' + res.statusCode);
+      console.log(options.path + ': bad status code ' + res.statusCode);
     }
-    var str = '';
-    res.on('data', function(d) {
-      str += d;
+
+    var data = '';
+    res.on('data', (d) => {
+      data += d;
     });
 
-    res.on('end', function() {
-      var arr = str.split("\n");
-      var quote = S(arr[2]).between('br.writeln("','<br>");').s;
-      var author = S(arr[3]).between('">','</a>').s;
-      postMessage(quote + '\n - ' + author);
+    res.on('end', () => {
+      callback(data);
     });
   });
 
-  quoteReq.on('error', function(err) {
-    console.log('error getting joke ' + JSON.stringify(err));
+  req.on('error', (err) => {
+    console.log(options.path + ': error with request ' + JSON.stringify(err));
   });
-  quoteReq.on('timeout', function(err) {
-    console.log('timeout getting joke ' + JSON.stringify(err));
+  req.on('timeout', (err) => {
+    console.log(options.path + ': timeout ' + JSON.stringify(err));
   });
-  quoteReq.end();
+  req.end();
+}
+
+function makeHttpsRequest(options, callback) {
+  var req = https.request(options, (res) => {
+    if (res.statusCode == 200) {
+      // all good
+    } else {
+      console.log(options.path + ': bad status code ' + res.statusCode);
+    }
+
+    var data = '';
+    res.on('data', (d) => {
+      data += d;
+    });
+
+    res.on('end', () => {
+      callback(data);
+    });
+  });
+
+  req.on('error', (err) => {
+    console.log(options.path + ': error with request ' + JSON.stringify(err));
+  });
+  req.on('timeout', (err) => {
+    console.log(options.path + ': timeout ' + JSON.stringify(err));
+  });
+  req.end();
 }
 
 function postMessage(botResponse) {
