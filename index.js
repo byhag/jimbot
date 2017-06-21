@@ -183,7 +183,7 @@ function respond(req, res) {
       var person = S(request.text).strip('Tell me about ','tell me about ',', ',
       'Jimbot ','jimbot ','Jimbo ','jimbo ','Jimmy ','jimmy ','Jim ','jim ',
       ' Jimbot',' jimbot',' Jimbo',' jimbo',' Jimmy',' jimmy',' Jim',' jim').split(' ');
-      tellMeAbout(person);
+      //tellMeAbout(person);
       res.end();
     } else if (hiRegex.test(request.text)) {
       res.writeHead(200);
@@ -219,7 +219,7 @@ function respond(req, res) {
       res.end();
     } else if (adviceRegex.test(request.text)) {
       res.writeHead(200);
-      advice();
+      //advice();
       res.end();
     } else if (catPicRegex.test(request.text)) {
       res.writeHead(200);
