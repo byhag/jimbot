@@ -142,7 +142,7 @@ function respond(req, res) {
   var request = JSON.parse(req);
   var jimbotRegex = /j(imbo(t|)|immy|im)/i;
   var jokeRegex = /(|tell me a )joke/i,
-      hiRegex = /(h(ey|i|ello)|yo)/i,
+      hiRegex = /(h(ey|i|ello)|yo)\b/i,
       colorRegex = /favorite color/i,
       whyRegex = /why/i,
       faceRegex = /(|make a )face/i,
